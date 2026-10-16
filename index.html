@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Máy tính giảm giá</title>
+  <style>
+    body {
+      max-width: 480px;
+      margin: 48px auto;
+      padding: 24px;
+      font-family: Arial, sans-serif;
+      color: #1f2937;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input,
+    button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      font: inherit;
+    }
+
+    button {
+      margin-top: 12px;
+      border: 0;
+      border-radius: 4px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #result {
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    #error {
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Máy tính giảm giá</h1>
+    <p>Hóa đơn trên 500.000đ được giảm 10%.</p>
+
+    <form id="discount-form">
+      <label for="bill-amount">Số tiền hóa đơn (đồng)</label>
+      <input
+        id="bill-amount"
+        name="billAmount"
+        type="number"
+        min="0"
+        step="1"
+        placeholder="Ví dụ: 600000"
+        required
+      >
+      <button type="submit">Tính tiền</button>
+    </form>
+
+    <section id="result" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const discountForm = document.getElementById("discount-form");
+    const billAmountInput = document.getElementById("bill-amount");
+    const result = document.getElementById("result");
+
+    const formatCurrency = (amount) =>
+      new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        maximumFractionDigits: 0
+      }).format(amount);
+
+    discountForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const billAmount = Number(billAmountInput.value);
+
+      if (!Number.isFinite(billAmount) || !Number.isInteger(billAmount) || billAmount < 0) {
+        result.innerHTML = '<p id="error">Vui lòng nhập số tiền nguyên hợp lệ (không âm).</p>';
+        return;
+      }
+
+      const discountRate = billAmount > 500000 ? 0.1 : 0;
+      const discountAmount = billAmount * discountRate;
+      const finalAmount = billAmount - discountAmount;
+
+      result.innerHTML = `
+        <p>Số tiền hóa đơn: <strong>${formatCurrency(billAmount)}</strong></p>
+        <p>Số tiền được giảm: <strong>${formatCurrency(discountAmount)}</strong></p>
+        <p>Số tiền phải trả: <strong>${formatCurrency(finalAmount)}</strong></p>
+      `;
+    });
+  </script>
+</body>
+</html>
